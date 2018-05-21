@@ -1,0 +1,66 @@
+;
+; List of modified method and variable names
+;
+
+
+;;;;;; MoCap.py
+; None
+
+
+
+
+
+;;;;;; MotionCapture.py
+;;; Constructor
+show_video -> showVideo
+show_fps -> showFPS
+show_markers -> showMarkers
+show_coords -> showCoordinates
+show_marker_count -> showMarkerCount
+markers -> markerList
+marker_color -> markerColor
+threshold_value -> thresholdValue
+max_value -> maxThresholdValue
+fps_counter -> fpsCounter
+start_time -> startTime
+current_fps -> currentFPS
+
+;;; Methods
+;display_fps method
+display_fps -> displayFPS
+font_size -> fontSize
+
+
+;draw_text method
+draw_text -> drawText
+font_size -> fontSize
+
+
+;get_gray_scale method
+get_gray_scale -> getGrayScale
+
+
+; get_threshold_mask method
+get_threshold_mask -> getThresholdMask
+gray_image -> grayScaleImage
+
+
+
+; write_image method
+write_image -> writeMethod
+
+
+
+; find_markers method
+find_markers -> findMarkers
+gray_img -> grayScaleImage
+threshold_img -> binaryThresholdImage
+im2 -> imageCopy
+cnt -> contour
+contours -> contourList
+
+
+
+; start_capture method
+start_capture -> startCapture
+key -> keyPress
