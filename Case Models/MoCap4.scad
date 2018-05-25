@@ -1,0 +1,19 @@
+difference(){
+    union(){
+        $fn=100;
+        minkowski(){
+            cylinder(r1=30,r2=0,h=30);
+            sphere(1);
+        }
+        translate([0,0,20]) cylinder(r=6,h=15);
+    }
+    union(){
+        union(){
+        $fn=100;
+        cylinder(r=4.2,h=50);
+        }
+        $fn=6;
+        translate([0,0,-1])
+        cylinder(r=10,h=4);
+    }
+}
