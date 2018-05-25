@@ -235,7 +235,7 @@ class MotionCapture:
             keyPress = cv2.waitKey(1) & 0xFF
             # Close down the video frame, stop capturing, and disable lightring
             if keyPress == ord('q'):
-                disableLightRing()
+                self.disableLightRing()
                 cap.release()
                 break
             
@@ -254,10 +254,10 @@ class MotionCapture:
 
 			# Enable the lightring for the camera (on e key pressed)
             if keyPress == ord('e'):
-                enableLightRing()
+                self.enableLightRing()
 			# Disable the lightring for the camera (on d key pressed)
             if keyPress == ord('d'):
-                disableLightRing()
+                self.disableLightRing()
 
             # Decrease the threshold of whitelight capture (On Up Arrow Pressed)
             if keyPress == 84:
