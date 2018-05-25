@@ -11,7 +11,7 @@ This project took place from 05/21/2017 to 07/07/2017.
 - George Ventura
 
 
-## Contents
+## Directory Listing
 	./disableLightRing.py
 	./enableLightRing.py
 	./keyTest.py
