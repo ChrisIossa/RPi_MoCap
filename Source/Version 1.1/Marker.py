@@ -1,3 +1,4 @@
+# datetime is required to implement timestamps
 import datetime
 
 '''
@@ -27,11 +28,11 @@ class Marker:
 
     # Print the camera label that this marker belongs to
     def printCameraLabel(self):
-        print("This is marker: {0}".format(self.cameraLabel))
+        print("This marker belongs to: {0}".format(self.cameraLabel))
 
     # Print the identifying number that marks this marker
     def printMarkerIdentifier(self):
-        print("This is marker: {0}".format(self.markerIdentifier))
+        print("This marker's ID is: {0}".format(self.markerIdentifier))
 
     # Return this marker's indentifying number
     def getMarkerIdentifier(self):
