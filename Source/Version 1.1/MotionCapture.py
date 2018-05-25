@@ -11,8 +11,8 @@ from Marker import Marker
 
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
-This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and displaying them as markers,
-denoting with a green box the coordinates.
+This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and 
+displaying them as markers, denoting with a green box the coordinates.
 
 '''
 class MotionCapture:
@@ -27,8 +27,9 @@ class MotionCapture:
         self.markerCount = 0
         self.markerList = []
 
+	# Set default color to Green
         self.markerColor = (0, 255, 0)
-        self.thresholdValue = 200
+        self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
         self.maxThresholdValue = 255
 
         self.fpsCounter = 0
