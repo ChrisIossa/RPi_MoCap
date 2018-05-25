@@ -1,19 +1,19 @@
 # RPi_MoCap
 This repository contains files relating to the development of a low-cost motion capture using the Raspberry Pi range of computers. <br /> This work is being conducted as part of the Graphics Research Group at **Western Connecticut State University (WCSU)**. 
 
-# Team Members
+## Team Members
 
 - SGRI 2017
 	- William Joel (Faculty Advisor)
 	- Paul Canada (Project Lead)
-	- Chris Iossa
+	- Christopher Iossa
 	- Orquidia Moreno
 	- George Ventura
 - SGRI 2018 
 	- William Joel (Faculty Advisor)
+	- Christopher Iossa (Project Lead)
 	- Matheus Alexandre
 	- Ty Doris
-	- Chris Iossa (Project Lead)
 	- Malik Roc
 
 ## Description
