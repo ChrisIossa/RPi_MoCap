@@ -8,8 +8,8 @@ from Marker import Marker
 
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
-This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and displaying them as markers,
-denoting with a green box the coordinates.
+This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and 
+displaying them as markers, denoting with a green box the coordinates.
 
 '''
 class MotionCapture:
@@ -75,7 +75,8 @@ class MotionCapture:
 
 
     '''
-    This method will determine if the input grayscale image is within the whitespace threshold. Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black
+    This method will determine if the input grayscale image is within the whitespace threshold. 
+    Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black.
     @params gray_image -> The grayscale image to process
     @return The threshold image after determining the threshold rating for the image
 
@@ -87,7 +88,7 @@ class MotionCapture:
 
 
     '''
-    This method will write the input image still to hard disk with a unique name, as to not overwrite files
+    This method will write the input image still to hard disk with a unique name, as to not overwrite files.
     @params image -> The image still to write to hard disk
     
     '''
@@ -117,8 +118,9 @@ class MotionCapture:
 
     '''
     This method will locate and process markers on a given image. 
-    The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and bounding a box around them. This will be
-    refresh every frame the camera captures. Storing and creation of the markers is also processed here
+    The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and 
+    bounding a box around them. 
+    This will refresh every frame the camera captures. Storing and creation of the markers is also processed here
     @params image -> The image still (frame) to locate markers
 
     '''
@@ -215,7 +217,7 @@ class MotionCapture:
 
             '''
 				Keypress events
-			'''
+	    '''
             keyPress = cv2.waitKey(1) & 0xFF
             # Close down the video frame, stop capturing, and disable lightring
             if keyPress == ord('q'):
