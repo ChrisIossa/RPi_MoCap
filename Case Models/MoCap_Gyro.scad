@@ -1,4 +1,4 @@
-$fn=100;
+    $fn=100;
 difference(){
     union(){
         translate([2,0,0]) cylinder(r=22.5,h=26);
@@ -10,7 +10,8 @@ difference(){
         translate ([69.5,10,2]) cube(12);
         translate ([42.3,10,2]) cube(8);
         translate ([30,10,2]) cube(8);
-        translate([0,-9,2]) cube([100,18,10]);
+        #translate([15,-9,2]) cube([20,18,26]);
+        #translate([75,-9,2]) cube([20,18,10]);
         translate([22.5,-15.5,2]) cube([65.7,31,26]);
     }
 }
