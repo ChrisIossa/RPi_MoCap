@@ -22,7 +22,11 @@ class Marker:
     def printTest(self):
         print("Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp))
         return "Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp)
-
+    
+    # silent version of print test
+    def returnTest(self):
+        return "Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp)
+        
     # Print the x, y coordinates of the marker
     def printCoords(self):
         print("Marker {0}{1} coordinates: {2}".format(self.cameraLabel, self.markerIdentifier, self.coords))
@@ -42,3 +46,8 @@ class Marker:
     # Print the timestamp of the marker
     def printTimeStamp(self):
         print("Marker {0}{1} has a timestamp of: {2}".format(self.cameraLabel, self.markerIdentifier, self.markerTimestamp))
+    
+    def jsonDump(self):
+        return "\{\r\n\t\"Camera\": \"{0}\"\r\n\t\"MarkerID\": \"{1}\"\r\n\t\"Timestamp\": \"{2}\"\r\n\t\"Coordinates\": \{\r\n\t\t\"X\": \"{3}\"\r\n\t\t\"Y\": \"{4}\"\r\n\t\}\r\n\}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp, self.coords[0], self.coords[1])
+
+

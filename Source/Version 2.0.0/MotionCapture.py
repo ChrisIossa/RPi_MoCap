@@ -2,6 +2,8 @@ import cv2 #OpenCV
 import numpy as np 
 import datetime
 import os.path
+import json
+from collections  import deque 
 '''
 import enableLightRing
 import disableLightRing
@@ -27,7 +29,7 @@ class MotionCapture:
         self.showMarkerCount = True
         self.markerCount = 0
         self.markerList = []
-
+        self.markerQueue = []
 	# Set default color to Green
         self.markerColor = (0, 255, 0)
         self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
@@ -41,10 +43,11 @@ class MotionCapture:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.GPIOPin, GPIO.OUT)
 
-	#Networking section
-	self.s = socket.socket()         
-	self.host = '169.254.114.139'
-	self.port = 54322           	  
+        #Networking section
+        self.s = socket.socket()         
+        self.host = '169.254.114.139'
+        self.port = 54321           	  
+        self.s.connect((self.host, self.port))
 
     '''
     This method will display the frames per second being captured by the camera in the upper left hand corner
@@ -189,11 +192,10 @@ class MotionCapture:
                             pass
                         temp = Marker(centerX, centerY, "A", len(contourList) - i, timestamp)
                         self.markerList.append(temp)
-			tempString = temp.printTest()
-			#print(tempString)
-			self.s.connect((self.host, self.port))
-                        self.s.send(tempString)
-			self.s.close()
+                        tempString = temp.returnTest()
+                        self.s.send(tempString+ "\r\n")
+                        
+
 
                         i = i - 1
                     except:
@@ -247,6 +249,7 @@ class MotionCapture:
             if keyPress == ord('q'):
                 self.disableLightRing()
                 cap.release()
+                self.s.close()
                 break
             
 			# Write a still image from the camera to drive
