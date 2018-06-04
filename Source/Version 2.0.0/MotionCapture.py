@@ -2,15 +2,18 @@ import cv2 #OpenCV
 import numpy as np 
 import datetime
 import os.path
+'''
 import enableLightRing
 import disableLightRing
+'''
 import socket
+import RPi.GPIO as GPIO
 from Marker import Marker
 
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
-This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and displaying them as markers,
-denoting with a green box the coordinates.
+This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and 
+displaying them as markers, denoting with a green box the coordinates.
 
 '''
 class MotionCapture:
@@ -22,37 +25,26 @@ class MotionCapture:
         self.showMarkers = False
         self.showCoordinates = True
         self.showMarkerCount = True
-
         self.markerCount = 0
         self.markerList = []
 
+	# Set default color to Green
         self.markerColor = (0, 255, 0)
-        self.thresholdValue = 200
+        self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
         self.maxThresholdValue = 255
 
         self.fpsCounter = 0
         self.startTime = None
         self.currentFPS = 0
+        self.GPIOPin = 7 # Enable Pin for Light Ring
+        GPIO.setwarnings(False) # Disable Warnings
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.GPIOPin, GPIO.OUT)
 
-        #Networking section
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # Create a socket object
-        host = socket.gethostbyname(socket.gethostname())  # Get local machine name
-        print("IP:" + host)
-        port = 12345  # Reserve a port for your service.
-        s.bind((host, port))  # Bind to the port
-
-        s.listen(5)  # Now wait for client connection.
-        c, addr = s.accept()  # Establish connection with client.
-        print('Got connection from')
-        print(addr)
-
-
-
-    '''
-    On close 
-    '''
-    def __del__(self):
-        c.close()  # Close the connection
+	#Networking section
+	self.s = socket.socket()         
+	self.host = '169.254.114.139'
+	self.port = 54322           	  
 
     '''
     This method will display the frames per second being captured by the camera in the upper left hand corner
@@ -117,7 +109,18 @@ class MotionCapture:
         cv2.imwrite("image{0}.jpg".format(counter), image)
 
 
+    '''
+    This method enables the IR Light Ring for the camera
+    '''
+    def enableLightRing(self):
+        GPIO.output(self.GPIOPin, GPIO.HIGH)
 
+
+    '''
+    This method disables the IR Light Ring for the camera
+    '''
+    def disableLightRing(self):
+        GPIO.output(self.GPIOPin, GPIO.LOW)
 
 
     '''
@@ -186,10 +189,11 @@ class MotionCapture:
                             pass
                         temp = Marker(centerX, centerY, "A", len(contourList) - i, timestamp)
                         self.markerList.append(temp)
-                        tempString = temp.printTest()
-                        c.send(tempString)
-
-
+			tempString = temp.printTest()
+			#print(tempString)
+			self.s.connect((self.host, self.port))
+                        self.s.send(tempString)
+			self.s.close()
 
                         i = i - 1
                     except:
@@ -241,7 +245,7 @@ class MotionCapture:
             keyPress = cv2.waitKey(1) & 0xFF
             # Close down the video frame, stop capturing, and disable lightring
             if keyPress == ord('q'):
-                disableLightRing.disable()
+                self.disableLightRing()
                 cap.release()
                 break
             
@@ -260,10 +264,10 @@ class MotionCapture:
 
 			# Enable the lightring for the camera (on e key pressed)
             if keyPress == ord('e'):
-                enableLightRing.enable()
+                self.enableLightRing()
 			# Disable the lightring for the camera (on d key pressed)
             if keyPress == ord('d'):
-                disableLightRing.disable()
+                self.disableLightRing()
 
             # Decrease the threshold of whitelight capture (On Up Arrow Pressed)
             if keyPress == 84:
