@@ -1,6 +1,7 @@
 # datetime is required to implement timestamps
 import datetime
 import json
+from collections import namedtuple
 '''
 Class for Marker. Stores data pertaining to individual markers
 @params x -> X coordinate of the marker
@@ -47,10 +48,22 @@ class Marker:
     def printTimeStamp(self):
         print("Marker {0}{1} has a timestamp of: {2}".format(self.cameraLabel, self.markerIdentifier, self.markerTimestamp))
     
+    #Convert the object to JSON and return the string representation
     def jsonDump(self):
-        d={'Marker ID': self.markerIdentifier, 'Camera': self.cameraLabel, 'Timestamp': str(self.markerTimestamp), 'coords': {'x':  self.coords[0], 'y': self.coords[1]}}
-        jsonStr = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
+        data={'markerID': self.markerIdentifier, 'cameraID': self.cameraLabel, 'timestamp': str(self.markerTimestamp), 'coords': {'x':  self.coords[0], 'y': self.coords[1]}}
+        jsonStr = json.dumps(data, sort_keys=True, indent=4, separators=(',', ': '))
         return jsonStr
+    
+    #Convert a JSON string to a marker object
+    def jsonLoad(self, jsonStr):
+        data = json.loads(jsonStr,object_hook=lambda dict: namedtuple('markerData', dict.keys())(*dict.values()))
+        self.markerIdentifier = markerData.markerID
+        self.cameraLabel = markerData.cameraID
+        self.markerTimestamp = datetime.datetime.strptime(markerData.timestamp, "%Y-%m-%d %H:%M:%S,%f")
+        self.coords[0] = markerData.coords.x
+        self.coords[1] = markerData.coords.y
+        return self        
+        
         
          
 
