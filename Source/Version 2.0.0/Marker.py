@@ -1,6 +1,6 @@
 # datetime is required to implement timestamps
 import datetime
-
+import json
 '''
 Class for Marker. Stores data pertaining to individual markers
 @params x -> X coordinate of the marker
@@ -48,6 +48,11 @@ class Marker:
         print("Marker {0}{1} has a timestamp of: {2}".format(self.cameraLabel, self.markerIdentifier, self.markerTimestamp))
     
     def jsonDump(self):
-        return "\{\r\n\t\"Camera\": \"{0}\"\r\n\t\"MarkerID\": \"{1}\"\r\n\t\"Timestamp\": \"{2}\"\r\n\t\"Coordinates\": \{\r\n\t\t\"X\": \"{3}\"\r\n\t\t\"Y\": \"{4}\"\r\n\t\}\r\n\}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp, self.coords[0], self.coords[1])
+        d={'Marker ID': self.markerIdentifier, 'Camera': self.cameraLabel, 'Timestamp': str(self.markerTimestamp), 'coords': {'x':  self.coords[0], 'y': self.coords[1]}}
+        jsonStr = json.dumps(d, sort_keys=True, indent=4, separators=(',', ': '))
+        return jsonStr
+        
+         
+
 
 

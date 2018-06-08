@@ -45,7 +45,7 @@ class MotionCapture:
 
         #Networking section
         self.s = socket.socket()         
-        self.host = '169.254.114.139'
+        self.host = '10.151.137.10'
         self.port = 54321           	  
         self.s.connect((self.host, self.port))
 
@@ -193,7 +193,8 @@ class MotionCapture:
                         temp = Marker(centerX, centerY, "A", len(contourList) - i, timestamp)
                         self.markerList.append(temp)
                         tempString = temp.returnTest()
-                        self.s.send(tempString+ "\r\n")
+                        print temp.jsonDump()
+                        self.s.send(temp.jsonDump()+ "\r\n")
                         
 
 
