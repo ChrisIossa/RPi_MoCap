@@ -7,6 +7,8 @@ cameraCaptureStarted = None
 # Make sure all required files are imported
 try:
     import datetime
+    import re
+    import argparse
     from MotionCapture import MotionCapture
     from Marker import Marker
     import disableLightRing
@@ -57,16 +59,22 @@ else:
 parser = argparse.ArgumentParser()
 parser.add_argument('integers', type=int, nargs='1', choices = range(255), help='value for the threshold')
 parser.add_argument('ipaddress', nargs = '1', help='ip address of the camera')
-parser.add_argument('port', nargs = '1', help = 'the port number')
+parser.add_argument('port', type=int, nargs = '1', help = 'the port number')
 parser.add_argument('label', nargs ='1', help = 'the name/label of the camera')
+parser.add_argument('frame_freq', type=int, nargs='1', help='the frequency of frames to be sent')
+parser.add_argument('-s', '--send', nargs ='1', help='determine if frequency of frames is displayed or not', action='store_true')
 
 args = parser.parse_args()
 
 #assigning values
 thresholdValue = args.integers
-ipAddress = args.ipaddress
+temp = args.ipaddress
+temp = re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$") #ip address input validation
+if temp:
+    ipAddress = re.group()
 port = args.port
 label = args.label
+frames = args.frame_freq
 
 #printing values
 print("Values given are: ")
@@ -74,6 +82,8 @@ print("Threshold -- " + thresholdValue)
 print("IP Address -- " + ipAddress)
 print("Port Number -- " + port)
 print("Label Name -- " + label)
+if args.send:
+    print("Frame Frequency -- " + frames)
     
 
 # Marker testing
