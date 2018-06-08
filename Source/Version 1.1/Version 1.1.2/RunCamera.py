@@ -52,6 +52,29 @@ if validImports:
 else:
     print("Could not load modules. Aborting camera operation")
 
+# Command Line Parameters
+
+parser = argparse.ArgumentParser()
+parser.add_argument('integers', type=int, nargs='1', choices = range(255), help='value for the threshold')
+parser.add_argument('ipaddress', nargs = '1', help='ip address of the camera')
+parser.add_argument('port', nargs = '1', help = 'the port number')
+parser.add_argument('label', nargs ='1', help = 'the name/label of the camera')
+
+args = parser.parse_args()
+
+#assigning values
+thresholdValue = args.integers
+ipAddress = args.ipaddress
+port = args.port
+label = args.label
+
+#printing values
+print("Values given are: ")
+print("Threshold -- " + thresholdValue)
+print("IP Address -- " + ipAddress)
+print("Port Number -- " + port)
+print("Label Name -- " + label)
+    
 
 # Marker testing
 '''
