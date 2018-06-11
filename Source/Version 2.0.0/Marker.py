@@ -1,6 +1,7 @@
 # datetime is required to implement timestamps
 import datetime
 import json
+import uuid
 from collections import namedtuple
 '''
 Class for Marker. Stores data pertaining to individual markers
@@ -18,6 +19,7 @@ class Marker:
         self.cameraLabel = cameraLabel
         self.markerIdentifier = markerIdentifier
         self.markerTimestamp = markerTimestamp
+        self.GUID = uuid.uuid4()
 
     # A little print test containing marker information
     def printTest(self):
@@ -48,9 +50,12 @@ class Marker:
     def printTimeStamp(self):
         print("Marker {0}{1} has a timestamp of: {2}".format(self.cameraLabel, self.markerIdentifier, self.markerTimestamp))
     
+    def printGUID(self):
+        print("This marker's GUID is {0}".format(self.GUID))
+    
     #Convert the object to JSON and return the string representation
     def jsonDump(self):
-        data={'markerID': self.markerIdentifier, 'cameraID': self.cameraLabel, 'timestamp': str(self.markerTimestamp), 'x': self.coords[0], 'y': self.coords[1]}
+        data={'markerID': self.markerIdentifier, 'cameraID': self.cameraLabel, 'timestamp': str(self.markerTimestamp), 'x': self.coords[0], 'y': self.coords[1], 'GUID': str(self.GUID)}
         jsonStr = json.dumps(data, sort_keys=True, separators=(',', ': '))
         return jsonStr
     
@@ -62,10 +67,10 @@ class Marker:
         self.markerTimestamp = datetime.datetime.strptime(data.timestamp, "%Y-%m-%d %H:%M:%S.%f")
         self.coords[0] = data.x
         self.coords[1] = data.y
+        self.GUID = uuid.UUID(data.GUID)
         return self        
         
         
          
-
 
 
