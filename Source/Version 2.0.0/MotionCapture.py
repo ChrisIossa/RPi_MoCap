@@ -22,6 +22,8 @@ class MotionCapture:
 
     # Default constructor. No parameters needed
     def __init__(self):
+        self.cameraLabel = "B"
+        self.dumpAmt = 25
         self.showVideo = True
         self.showFPS = True
         self.showMarkers = False
@@ -29,7 +31,7 @@ class MotionCapture:
         self.showMarkerCount = True
         self.markerCount = 0
         self.markerList = []
-        self.markerQueue = []
+        self.markerListFull = []
 	# Set default color to Green
         self.markerColor = (0, 255, 0)
         self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
@@ -45,7 +47,7 @@ class MotionCapture:
 
         #Networking section
         self.s = socket.socket()         
-        self.host = '10.151.137.10'
+        self.host = '169.254.114.139'
         self.port = 54321           	  
         self.s.connect((self.host, self.port))
 
@@ -138,6 +140,34 @@ class MotionCapture:
             return False
 
 
+    def dumpData(self):
+        self.s.send("Dumping")
+        for i in self.markerListFull:
+            sending=True
+            msgRecv=self.s.recv(4096)
+            jsonStr =i.jsonDump()
+            if (msgRecv == "Ready"):
+                    self.s.send(jsonStr)
+            while(sending):
+                msgRecv=self.s.recv(4096)
+                if(msgRecv == str(i.GUID)):
+                    self.s.send("OK")
+                    sending = False;
+                if(msgRecv == "Resend"):
+                    self.s.send(jsonStr)
+                    sending = True;
+        self.s.recv(4096)
+        self.s.send("Done")
+        markerCnt=self.s.recv(4096)
+        if (int(markerCnt) == len(self.markerListFull)):
+            self.s.send("Equal")
+        else:
+            self.s.send("Not equal")
+            
+            
+    
+                
+                
 
 
     '''
@@ -177,7 +207,7 @@ class MotionCapture:
                     centerY = int (y+(y2/2))
 
                     # Draw an identifying label on top of each marker
-                    self.drawText(image, "A" + str(len(contourList) - i), (centerX, centerY - 25), .50, (0, 255, 255), 1)
+                    self.drawText(image, self.cameraLabel + str(len(contourList) - i), (centerX, centerY - 25), .50, (0, 255, 255), 1)
 
                     # Draw a circle denoting centerpoint of marker
                     cv2.circle(image, (centerX, centerY), 2, (0, 0, 255), -1)
@@ -190,14 +220,9 @@ class MotionCapture:
                             print("Creating new marker")
                         else:
                             pass
-                        temp = Marker(centerX, centerY, "A", len(contourList) - i, timestamp)
+                        temp = Marker(centerX, centerY, self.cameraLabel, len(contourList) - i, timestamp)
                         self.markerList.append(temp)
-                        tempString = temp.returnTest()
-                        print temp.jsonDump()
-                        self.s.send(temp.jsonDump()+ "\r\n")
-                        
-
-
+                        self.markerListFull.append(temp)
                         i = i - 1
                     except:
                         print("Error creating marker object or appending")
@@ -250,8 +275,13 @@ class MotionCapture:
             if keyPress == ord('q'):
                 self.disableLightRing()
                 cap.release()
+                self.s.send("Disconnecting")
                 self.s.close()
                 break
+                
+            if keyPress == ord('w'):
+                self.dumpData()
+                     
             
 			# Write a still image from the camera to drive
             if keyPress == ord('s'):
