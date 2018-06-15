@@ -59,17 +59,20 @@ else:
 # Command Line Parameters
 
 parser = argparse.ArgumentParser()
-parser.add_argument('integers', type=int, nargs='1', choices = range(255), help='value for the threshold')
-parser.add_argument('ipaddress', nargs = '1', help='ip address of the camera')
-parser.add_argument('port', type=int, nargs = '1', help = 'the port number')
-parser.add_argument('label', nargs ='1', help = 'the name/label of the camera')
-parser.add_argument('frame_freq', type=int, nargs='1', help='the frequency of frames to be sent')
-parser.add_argument('-s', '--send', nargs ='1', help='determine if frequency of frames is displayed or not', action='store_true')
+parser.add_argument('integers', type=int, choices = range(255), help='value for the threshold')
+parser.add_argument('ipaddress', help='ip address of the camera')
+parser.add_argument('port', type=int, help = 'the port number')
+parser.add_argument('label', help = 'the name/label of the camera')
+parser.add_argument('frame_freq', type=int, help='the frequency of frames to be sent')
+parser.add_argument('-s', '--send', help='determine if frequency of frames is displayed or not', action='store_true')
 parser.add_argument('infile', type=argparse.FileType('r'), help = 'the file to operate on')
 
+#parse the command
 args = parser.parse_args()
 
+#check if the command only has one argument
 if len(sys.argv) == 1:
+    #if so, check if the argument is an xml file
     try:
         tree = ET.parse(args.infile)
         root = tree.getroot()
@@ -80,6 +83,7 @@ else:
     thresholdValue = args.integers
     temp = args.ipaddress
     temp = re.match(r"^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$") #ip address input validation
+    #check if the ip address matches the standard "000.000.000.000" format
     if temp:
         ipAddress = re.group()
     port = args.port
@@ -92,6 +96,7 @@ print("Threshold -- " + thresholdValue)
 print("IP Address -- " + ipAddress)
 print("Port Number -- " + port)
 print("Label Name -- " + label)
+#if the -s argument is set then show the frame frequency
 if args.send:
     print("Frame Frequency -- " + frames)
     
