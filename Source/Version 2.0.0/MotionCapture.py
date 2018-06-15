@@ -3,6 +3,8 @@ import numpy as np
 import datetime
 import os.path
 import json
+import tempfile
+import hashlib
 from collections  import deque 
 '''
 import enableLightRing
@@ -23,7 +25,7 @@ class MotionCapture:
     # Default constructor. No parameters needed
     def __init__(self):
         self.cameraLabel = "B"
-        self.dumpAmt = 25
+        #self.dumpAmt = 25
         self.showVideo = True
         self.showFPS = True
         self.showMarkers = False
@@ -138,32 +140,46 @@ class MotionCapture:
             return True
         if option is True:
             return False
-
-
+    
+    def markersToTempFile(self):
+        temp=tempfile.SpooledTemporaryFile()
+        for i in self.markerListFull:
+            temp.write(i.jsonDump() + "\n")
+        return temp
+    
+    def hashFileSHA1(self, fileIn, bufferSize):
+        hashed = hashlib.sha1()
+        while(True):
+            chunk = fileIn.read(bufferSize)
+            if not chunk:
+                break
+            hashed.update(chunk)
+        return hashed.hexdigest()     
+    
+    def sendSpooledFile(self, fileIn):
+        msg=self.s.recv(4096)
+        while (msg != "Ready for File"):
+            msg=self.s.recv(4096)
+        self.s.send("OK")
+        chunk = fileIn.read(4096)
+        while (chunk):
+            self.s.send(chunk)
+            chunk = fileIn.read(4096)
+        print("EOF")
+        
     def dumpData(self):
         self.s.send("Dumping")
-        for i in self.markerListFull:
-            sending=True
-            msgRecv=self.s.recv(4096)
-            jsonStr =i.jsonDump()
-            if (msgRecv == "Ready"):
-                    self.s.send(jsonStr)
-            while(sending):
-                msgRecv=self.s.recv(4096)
-                if(msgRecv == str(i.GUID)):
-                    self.s.send("OK")
-                    sending = False;
-                if(msgRecv == "Resend"):
-                    self.s.send(jsonStr)
-                    sending = True;
-        self.s.recv(4096)
-        self.s.send("Done")
-        markerCnt=self.s.recv(4096)
-        if (int(markerCnt) == len(self.markerListFull)):
-            self.s.send("Equal")
-        else:
-            self.s.send("Not equal")
-            
+
+        temp=tempfile.SpooledTemporaryFile()
+        temp = self.markersToTempFile()
+        tempHash=self.hashFileSHA1(temp,131072)
+        msg=self.s.recv(4096)
+        while (msg != "Ready for Hash"):   
+                    msg=self.s.recv(4096)
+        print(tempHash)
+        self.s.send(tempHash)
+        print ("Sent hash")
+        self.sendSpooledFile(temp) 
             
     
                 
