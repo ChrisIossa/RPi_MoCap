@@ -1,4 +1,4 @@
-import cv2 #OpenCV
+import cv2 #OpenCV../
 import numpy as np 
 import datetime
 import os.path
