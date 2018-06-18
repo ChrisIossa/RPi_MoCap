@@ -1,18 +1,13 @@
-import cv2 #OpenCV
-import numpy as np 
-import datetime
+import cv2          # OpenCV
+import numpy as np  # Coordinates
+import datetime     # Marker Timestamps
 import os.path
-import json
-import zlib
-import hashlib
-from collections  import deque 
-'''
-import enableLightRing
-import disableLightRing
-'''
-import socket
-import RPi.GPIO as GPIO
-from Marker import Marker
+import json         # JSON serialization 
+import hashlib      # SHA1 Hash
+import socket       # Sockets for host communication
+import RPi.GPIO as GPIO         #Light ring
+from collections import deque   # Double ended queue
+from Marker import Marker       # Marker object
 
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
@@ -24,21 +19,22 @@ class MotionCapture:
 
     # Default constructor. No parameters needed
     def __init__(self):
-        self.cameraLabel = "B"
-        self.dumpAmt = 25
-        self.showVideo = True
-        self.showFPS = True
+
+        #Capture settings
+        self.cameraLabel = "B" # Label of camera, used to distinguish markers captured from different cameras
+        self.showVideo = True  # Neccessary at the moment to control capture
+        self.showFPS = True 
         self.showMarkers = False
         self.showCoordinates = True
         self.showMarkerCount = True
+
         self.markerCount = 0
         self.markerList = []
         self.markerListFull = []
-	# Set default color to Green
-        self.markerColor = (0, 255, 0)
+	
+        self.markerColor = (0, 255, 0)# Set default color to Green
         self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
         self.maxThresholdValue = 255
-
         self.fpsCounter = 0
         self.startTime = None
         self.currentFPS = 0
@@ -48,9 +44,9 @@ class MotionCapture:
         GPIO.setup(self.GPIOPin, GPIO.OUT)
 
         #Networking section
-        self.s = socket.socket()         
-        self.host = '192.168.0.100'
-        self.port = 12345           	  
+        self.s = socket.socket()        # Socket for host communication
+        self.host = '__IP_ADDRESS__'     # IP address of host
+        self.port = __PORT_NUM__               # Port used for communcation
         self.s.connect((self.host, self.port))
 
     '''
@@ -142,30 +138,31 @@ class MotionCapture:
             return False
 
 
+    '''
+    This method dumps marker data over the communication socket
+    It serializes all the markers to JSON form
+    Calculates a hash of all the marker GUIDs
+    and sends both over to the host.
+    This should be the last step of capture process
+    '''
     def dumpData(self):
-        jsonList=[]
-        jsonFile =""
-        markerHash = hashlib.sha1()
-        for i in self.markerListFull:
-            jsonStr =i.jsonDump()
-            jsonList.append(jsonStr + '\n')
-            jsonFile += jsonList[-1]
-            markerHash.update(str(i.GUID))
-        self.s.send("Dumping")
-        while(self.s.recv(4096) != "OK"):
+        jsonList=[]     # List of markers in JSON form
+        jsonFile =""    # JSON file of JSON markers
+        markerHash = hashlib.sha1()     #SHA1 hash to store hash of marker GUIDs
+        for i in self.markerListFull:   # For every marker found during capture session
+            jsonStr =i.jsonDump()       # Serialize it to JSON
+            jsonList.append(jsonStr + '\n') # Add it to the list
+            jsonFile += jsonList[-1]        # Add it to the file
+            markerHash.update(str(i.GUID))  # Update the hash with its GUID
+        self.s.send("Dumping")              # Notify host that the dump is ready
+        while(self.s.recv(4096) != "OK"):   # Wait for the host to acknowledge
             true=True
-        self.s.send(markerHash.hexdigest())
+        self.s.send(markerHash.hexdigest()) # Send the GUID hash
         print markerHash.hexdigest()
-        for i in jsonList:
-            self.s.sendall(i)
-        self.s.sendall(chr(4))        
+        for i in jsonList:                  # For every marker
+            self.s.sendall(i)               # Send its JSON representation
+        self.s.sendall(chr(4))              # Send EOT
         
-            
-            
-    
-                
-                
-
 
     '''
     This method will locate and process markers on a given image. 
@@ -265,9 +262,10 @@ class MotionCapture:
 
 
             '''
-				Keypress events
-			'''
+	    Keypress events
+            '''
             keyPress = cv2.waitKey(1) & 0xFF
+
             # Close down the video frame, stop capturing, and disable lightring
             if keyPress == ord('q'):
                 self.disableLightRing()
@@ -275,28 +273,29 @@ class MotionCapture:
                 self.s.send("Disconnecting")
                 self.s.close()
                 break
-                
+
+            # Dump capture session over socket    
             if keyPress == ord('w'):
                 self.dumpData()
                      
-            
-			# Write a still image from the camera to drive
+            # Write a still image from the camera to drive
             if keyPress == ord('s'):
                 self.writeMethod(frame)
 
-			# Display the current frames/sec on the video frame
+            # Display the current frames/sec on the video frame
             if keyPress == ord('f'):
                 self.showFPS = self.toggle(self.showFPS)
             
-			# Display markers in view on the video frame	
+	    # Display markers in view on the video frame	
             if keyPress == ord('m'):
                 self.showMarkers = self.toggle(self.showMarkers)
                 print("Show markers set to {0}".format(self.showMarkers))
 
-			# Enable the lightring for the camera (on e key pressed)
+	    # Enable the lightring for the camera (on e key pressed)
             if keyPress == ord('e'):
                 self.enableLightRing()
-			# Disable the lightring for the camera (on d key pressed)
+                
+	    # Disable the lightring for the camera (on d key pressed)
             if keyPress == ord('d'):
                 self.disableLightRing()
 

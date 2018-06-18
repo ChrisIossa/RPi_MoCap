@@ -1,8 +1,7 @@
-# datetime is required to implement timestamps
-import datetime
-import json
-import uuid
-from collections import namedtuple
+import datetime # Timestamps
+import json     # JSON Serialization/Deserialization
+import uuid     # GUIDs
+from collections import namedtuple # JSON Serialization
 '''
 Class for Marker. Stores data pertaining to individual markers
 @params x -> X coordinate of the marker
@@ -49,20 +48,18 @@ class Marker:
     # Print the timestamp of the marker
     def printTimeStamp(self):
         print("Marker {0}{1} has a timestamp of: {2}".format(self.cameraLabel, self.markerIdentifier, self.markerTimestamp))
-    
+
+    # Print the GUID of the marker
     def printGUID(self):
         print("This marker's GUID is {0}".format(self.GUID))
 
-    def getGUID(self):
-        return self.GUID
-    
-    #Convert the object to JSON and return the string representation
+    # Serialize the object to JSON and return the string representation
     def jsonDump(self):
         data={'markerID': self.markerIdentifier, 'cameraID': self.cameraLabel, 'timestamp': str(self.markerTimestamp), 'x': self.coords[0], 'y': self.coords[1], 'GUID': str(self.GUID)}
         jsonStr = json.dumps(data, sort_keys=True, separators=(',', ': '))
         return jsonStr
     
-    #Convert a JSON string to a marker object
+    # Deserialize JSON to a marker object
     def jsonLoad(self, jsonStr):
         data = json.loads(jsonStr, object_hook=lambda dict: namedtuple('markerData', dict.keys())(*dict.values()))
         self.markerIdentifier = data.markerID

@@ -5,6 +5,7 @@ This is the latest version of the Raspberry Pi Motion Capture and Tracking Syste
 This version contains minor optimizations and code cleanup as part of the efforts to finalize the Phase 1 software package.
 
 ## Directory Listing
+	./client.py
 	./disableLightRing.py
 	./enableCameraDriver.sh
 	./enableLightRing.py
@@ -12,6 +13,7 @@ This version contains minor optimizations and code cleanup as part of the effort
 	./MotionCapture.py
 	./README.MD
 	./RunCamera.py
+	./server.py
 
 ## Team Members
 - SGRI 2018 
@@ -26,4 +28,4 @@ This version contains minor optimizations and code cleanup as part of the effort
 	- George Ventura
 
 Last updated:
-05/25/2018
+06/18/2018
