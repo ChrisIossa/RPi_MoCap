@@ -3,6 +3,8 @@ import numpy as np
 import datetime
 import os.path
 import json
+import zlib
+import hashlib
 from collections  import deque 
 '''
 import enableLightRing
@@ -47,8 +49,8 @@ class MotionCapture:
 
         #Networking section
         self.s = socket.socket()         
-        self.host = '169.254.114.139'
-        self.port = 54321           	  
+        self.host = '192.168.0.100'
+        self.port = 12345           	  
         self.s.connect((self.host, self.port))
 
     '''
@@ -141,28 +143,23 @@ class MotionCapture:
 
 
     def dumpData(self):
-        self.s.send("Dumping")
+        jsonList=[]
+        jsonFile =""
+        markerHash = hashlib.sha1()
         for i in self.markerListFull:
-            sending=True
-            msgRecv=self.s.recv(4096)
             jsonStr =i.jsonDump()
-            if (msgRecv == "Ready"):
-                    self.s.send(jsonStr)
-            while(sending):
-                msgRecv=self.s.recv(4096)
-                if(msgRecv == str(i.GUID)):
-                    self.s.send("OK")
-                    sending = False;
-                if(msgRecv == "Resend"):
-                    self.s.send(jsonStr)
-                    sending = True;
-        self.s.recv(4096)
-        self.s.send("Done")
-        markerCnt=self.s.recv(4096)
-        if (int(markerCnt) == len(self.markerListFull)):
-            self.s.send("Equal")
-        else:
-            self.s.send("Not equal")
+            jsonList.append(jsonStr + '\n')
+            jsonFile += jsonList[-1]
+            markerHash.update(str(i.GUID))
+        self.s.send("Dumping")
+        while(self.s.recv(4096) != "OK"):
+            true=True
+        self.s.send(markerHash.hexdigest())
+        print markerHash.hexdigest()
+        for i in jsonList:
+            self.s.sendall(i)
+        self.s.sendall(chr(4))        
+        
             
             
     

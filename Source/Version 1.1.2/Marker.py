@@ -52,6 +52,9 @@ class Marker:
     
     def printGUID(self):
         print("This marker's GUID is {0}".format(self.GUID))
+
+    def getGUID(self):
+        return self.GUID
     
     #Convert the object to JSON and return the string representation
     def jsonDump(self):
