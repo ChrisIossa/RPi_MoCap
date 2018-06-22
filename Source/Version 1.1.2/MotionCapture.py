@@ -9,6 +9,7 @@ import RPi.GPIO as GPIO         #Light ring
 from collections import deque   # Double ended queue
 from Marker import Marker       # Marker object
 
+
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
 This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and 
@@ -18,18 +19,21 @@ displaying them as markers, denoting with a green box the coordinates.
 class MotionCapture:
 
     # Default constructor. No parameters needed
+
     def __init__(self, cameraLabelIn,thresholdIn,ipIn,portIn):
 
         #Capture settings
         self.cameraLabel = cameraLabelIn # Label of camera, used to distinguish markers captured from different cameras
         self.showVideo = True  # Neccessary at the moment to control capture
         self.showFPS = True 
+
         self.showMarkers = False
         self.showCoordinates = True
         self.showMarkerCount = True
 
         self.markerCount = 0
         self.markerList = []
+
         self.markerListFull = []
 	
         self.markerColor = (0, 255, 0)# Set default color to Green
@@ -48,6 +52,7 @@ class MotionCapture:
         self.host = ipIn     # IP address of host
         self.port = portIn               # Port used for communcation
         self.s.connect((self.host, self.port))
+
 
     '''
     This method will display the frames per second being captured by the camera in the upper left hand corner
@@ -80,7 +85,6 @@ class MotionCapture:
     This method takes in an image still and converts it to grayscale
     @params image -> The image to turn into grayscale
     @return The converted image to grayscale
-
     '''
     def getGrayScale(self, image):
         return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # make image gray scale
@@ -92,7 +96,6 @@ class MotionCapture:
     This method will determine if the input grayscale image is within the whitespace threshold. Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black
     @params gray_image -> The grayscale image to process
     @return The threshold image after determining the threshold rating for the image
-
     '''
     def getThresholdMask(self, grayScaleImage):
         th, dst = cv2.threshold(grayScaleImage, self.thresholdValue, self.maxThresholdValue, cv2.THRESH_BINARY)  # apply filter
@@ -101,6 +104,7 @@ class MotionCapture:
 
 
     '''
+
     This method will write the input image still to hard disk with a unique name, as to not overwrite files
     @params image -> The image still to write to hard disk
     
@@ -126,10 +130,10 @@ class MotionCapture:
         GPIO.output(self.GPIOPin, GPIO.LOW)
 
 
+
     '''
     This method is a blanket method to toggle a boolean value, i.e. a camera setting that is either True or False
     @params option -> The bool value to toggle
-
     '''
     def toggle(self, option):
         if option is False:
@@ -169,8 +173,8 @@ class MotionCapture:
     The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and bounding a box around them. This will be
     refresh every frame the camera captures. Storing and creation of the markers is also processed here
     @params image -> The image still (frame) to locate markers
-
     '''
+
     def findMarkers(self, image):
         grayScaleImage = self.getGrayScale(image)
 
@@ -201,7 +205,9 @@ class MotionCapture:
                     centerY = int (y+(y2/2))
 
                     # Draw an identifying label on top of each marker
+
                     self.drawText(image, self.cameraLabel + str(len(contourList) - i), (centerX, centerY - 25), .50, (0, 255, 255), 1)
+
 
                     # Draw a circle denoting centerpoint of marker
                     cv2.circle(image, (centerX, centerY), 2, (0, 0, 255), -1)
@@ -214,6 +220,7 @@ class MotionCapture:
                             print("Creating new marker")
                         else:
                             pass
+
                         temp = Marker(centerX, centerY, self.cameraLabel, len(contourList) - i, timestamp)
                         self.markerList.append(temp)
                         self.markerListFull.append(temp)
@@ -231,7 +238,6 @@ class MotionCapture:
     '''
     This method will control the starting and stopping of video capture from the camera, activation of other class functions, 
     and keypresses while video frame is active and in focus. 
-
     '''
     def startCapture(self):
         try:
@@ -291,6 +297,7 @@ class MotionCapture:
             if keyPress == ord('m'):
                 self.showMarkers = self.toggle(self.showMarkers)
                 print("Show markers set to {0}".format(self.showMarkers))
+
 
 	    # Enable the lightring for the camera (on e key pressed)
             if keyPress == ord('e'):

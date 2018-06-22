@@ -1,7 +1,9 @@
+
 import datetime # Timestamps
 import json     # JSON Serialization/Deserialization
 import uuid     # GUIDs
 from collections import namedtuple # JSON Serialization
+
 '''
 Class for Marker. Stores data pertaining to individual markers
 @params x -> X coordinate of the marker
@@ -20,6 +22,7 @@ class Marker:
         self.markerTimestamp = markerTimestamp
         self.GUID = uuid.uuid4()
 
+
     # A little print test containing marker information
     def printTest(self):
         print("Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp))
@@ -27,8 +30,6 @@ class Marker:
     
     # silent version of print test
     def returnTest(self):
-        return "Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp)
-        
     # Print the x, y coordinates of the marker
     def printCoords(self):
         print("Marker {0}{1} coordinates: {2}".format(self.cameraLabel, self.markerIdentifier, self.coords))
@@ -48,7 +49,6 @@ class Marker:
     # Print the timestamp of the marker
     def printTimeStamp(self):
         print("Marker {0}{1} has a timestamp of: {2}".format(self.cameraLabel, self.markerIdentifier, self.markerTimestamp))
-
     # Print the GUID of the marker
     def printGUID(self):
         print("This marker's GUID is {0}".format(self.GUID))
@@ -69,8 +69,3 @@ class Marker:
         self.coords[1] = data.y
         self.GUID = uuid.UUID(data.GUID)
         return self        
-        
-        
-         
-
-

@@ -2,14 +2,17 @@ import cv2 #OpenCV
 import numpy as np 
 import datetime
 import os.path
+'''
 import enableLightRing
 import disableLightRing
+'''
+import RPi.GPIO as GPIO
 from Marker import Marker
 
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
-This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and displaying them as markers,
-denoting with a green box the coordinates.
+This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and 
+displaying them as markers, denoting with a green box the coordinates.
 
 '''
 class MotionCapture:
@@ -21,18 +24,21 @@ class MotionCapture:
         self.showMarkers = False
         self.showCoordinates = True
         self.showMarkerCount = True
-
         self.markerCount = 0
         self.markerList = []
 
+	# Set default color to Green
         self.markerColor = (0, 255, 0)
-        self.thresholdValue = 200
+        self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
         self.maxThresholdValue = 255
 
         self.fpsCounter = 0
         self.startTime = None
         self.currentFPS = 0
-
+        self.GPIOPin = 7 # Enable Pin for Light Ring
+        GPIO.setwarnings(False) # Disable Warnings
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.GPIOPin, GPIO.OUT)
 
 
     '''
@@ -75,7 +81,8 @@ class MotionCapture:
 
 
     '''
-    This method will determine if the input grayscale image is within the whitespace threshold. Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black
+    This method will determine if the input grayscale image is within the whitespace threshold. 
+    Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black.
     @params gray_image -> The grayscale image to process
     @return The threshold image after determining the threshold rating for the image
 
@@ -87,7 +94,7 @@ class MotionCapture:
 
 
     '''
-    This method will write the input image still to hard disk with a unique name, as to not overwrite files
+    This method will write the input image still to hard disk with a unique name, as to not overwrite files.
     @params image -> The image still to write to hard disk
     
     '''
@@ -98,7 +105,18 @@ class MotionCapture:
         cv2.imwrite("image{0}.jpg".format(counter), image)
 
 
+    '''
+    This method enables the IR Light Ring for the camera
+    '''
+    def enableLightRing(self):
+        GPIO.output(self.GPIOPin, GPIO.HIGH)
 
+
+    '''
+    This method disables the IR Light Ring for the camera
+    '''
+    def disableLightRing(self):
+        GPIO.output(self.GPIOPin, GPIO.LOW)
 
 
     '''
@@ -117,8 +135,9 @@ class MotionCapture:
 
     '''
     This method will locate and process markers on a given image. 
-    The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and bounding a box around them. This will be
-    refresh every frame the camera captures. Storing and creation of the markers is also processed here
+    The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and 
+    bounding a box around them. 
+    This will refresh every frame the camera captures. Storing and creation of the markers is also processed here
     @params image -> The image still (frame) to locate markers
 
     '''
@@ -215,11 +234,11 @@ class MotionCapture:
 
             '''
 				Keypress events
-			'''
+	    '''
             keyPress = cv2.waitKey(1) & 0xFF
             # Close down the video frame, stop capturing, and disable lightring
             if keyPress == ord('q'):
-                disableLightRing.disable()
+                self.disableLightRing()
                 cap.release()
                 break
             
@@ -238,10 +257,10 @@ class MotionCapture:
 
 			# Enable the lightring for the camera (on e key pressed)
             if keyPress == ord('e'):
-                enableLightRing.enable()
+                self.enableLightRing()
 			# Disable the lightring for the camera (on d key pressed)
             if keyPress == ord('d'):
-                disableLightRing.disable()
+                self.disableLightRing()
 
             # Decrease the threshold of whitelight capture (On Up Arrow Pressed)
             if keyPress == 84:
