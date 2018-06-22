@@ -18,10 +18,10 @@ displaying them as markers, denoting with a green box the coordinates.
 class MotionCapture:
 
     # Default constructor. No parameters needed
-    def __init__(self):
+    def __init__(self, cameraLabelIn,thresholdIn,ipIn,portIn):
 
         #Capture settings
-        self.cameraLabel = "B" # Label of camera, used to distinguish markers captured from different cameras
+        self.cameraLabel = cameraLabelIn # Label of camera, used to distinguish markers captured from different cameras
         self.showVideo = True  # Neccessary at the moment to control capture
         self.showFPS = True 
         self.showMarkers = False
@@ -33,7 +33,7 @@ class MotionCapture:
         self.markerListFull = []
 	
         self.markerColor = (0, 255, 0)# Set default color to Green
-        self.thresholdValue = 200 # High default threshold value to ensure that white markers are precisely denoted
+        self.thresholdValue = thresholdIn # High default threshold value to ensure that white markers are precisely denoted
         self.maxThresholdValue = 255
         self.fpsCounter = 0
         self.startTime = None
@@ -45,8 +45,8 @@ class MotionCapture:
 
         #Networking section
         self.s = socket.socket()        # Socket for host communication
-        self.host = '__IP_ADDRESS__'     # IP address of host
-        self.port = __PORT_NUM__               # Port used for communcation
+        self.host = ipIn     # IP address of host
+        self.port = portIn               # Port used for communcation
         self.s.connect((self.host, self.port))
 
     '''
@@ -276,6 +276,7 @@ class MotionCapture:
 
             # Dump capture session over socket    
             if keyPress == ord('w'):
+                self.showMarkers = self.toggle(self.showMarkers)
                 self.dumpData()
                      
             # Write a still image from the camera to drive
