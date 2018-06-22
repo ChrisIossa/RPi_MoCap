@@ -1,0 +1,21 @@
+<?xml version = "1.0"?>
+<arguments>
+  <threshold>
+    <value>255</value>
+  </threshold>
+  <ipaddress>
+    <address>1.02.3.444</address>
+  </ipaddress>
+  <port>
+    <number>12345</number>
+  </port>
+  <label>
+    <name>Camera A</name>
+  </label>
+  <frequency>
+    <f>50</f>
+  </frequency>
+  <sendfreq>
+    <send>true</send>
+  </sendfreq>
+</arguments>
