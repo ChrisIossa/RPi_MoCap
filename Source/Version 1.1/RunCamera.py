@@ -9,9 +9,11 @@ try:
     import datetime
     from MotionCapture import MotionCapture
     from Marker import Marker
+    '''
     import disableLightRing
     import enableLightRing
     import RPi.GPIO as GPIO
+    '''
 except ModuleNotFoundError as e:
     print(e)
     validImports = False
