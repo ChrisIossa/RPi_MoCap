@@ -1,8 +1,9 @@
-# Version 1.1
+# Version 1.1.2
 
 ## Description:
 This is the latest version of the Raspberry Pi Motion Capture and Tracking System, created by the MoCap teams as part of SGRI 2017 and SGRI 2018 at Western Connecticut State University.
-This version contains minor optimizations and code cleanup as part of the efforts to finalize the Phase 1 software package.
+This version add's communication between the individual camera's and a host computer.
+It also adds command line parameters to RunCamera.py so that dynamic values can be passed from the CLI to the software.
 
 ## Directory Listing
 	./client.py
@@ -28,4 +29,4 @@ This version contains minor optimizations and code cleanup as part of the effort
 	- George Ventura
 
 Last updated:
-06/18/2018
+06/22/2018

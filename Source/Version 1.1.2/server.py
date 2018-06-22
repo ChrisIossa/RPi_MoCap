@@ -6,9 +6,9 @@ from Marker import Marker
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)       # Create a socket object
-host = '__IP_ADDRESS__'             # IP address used for this service
-port = __PORT_NUM__                 # Reserve a port for your service.
-cameraCount = __CAMERA_COUNT__      # Number of cameras used for this session.
+host = '169.254.114.139'             # IP address used for this service
+port = 12345                 # Reserve a port for your service.
+cameraCount = 1      # Number of cameras used for this session.
 print(host)
 s.bind((host, port))                # Bind to the port
 s.listen(5)                         # Now wait for client connection.
@@ -29,19 +29,20 @@ while cameraCount != 0:                     # While there are still cameras conn
         v.settimeout(30.0)                  # Set timeout for poll
         try:
             msg = v.recv(4096)              # Listen for any message on socket
-        except timeout:
+        except:
             print "Read timed out"          # Nothing in socket
+            break;
         v.settimeout(None)
         if(msg == "Disconnecting"):         # Camera disconnected
-            cameraCount--                   # One less camera connected
+            cameraCount -= 1                   # One less camera connected
             print(msg)
             v.close()                       # Close the socket
         elif (msg=="Dumping"):              # Camera wishes to dump data
             v.send("OK")                    # Acknowledge
             theirHash=v.recv(40)            # Get the hash of marker GUIDs
-            print theirHash     
+            print theirHash
             myHash = hashlib.sha1()         # Prepare SHA1 has to store hash of recived marker GUIDs
-            stillRecv = True        
+            stillRecv = True
             jsonFile = ""                   # String that mimics jsonFile
             while (stillRecv):
                 chunk = v.recv(4096)        # Read 4096 bytes from socket
@@ -63,8 +64,8 @@ while cameraCount != 0:                     # While there are still cameras conn
             print ("My Hash {0}".format(myHash.hexdigest()))# Print out the hash the host generated
             print ("Their Hash {0}".format(theirHash))      # Print out the hash sent from the camera
             if(myHash.hexdigest() == theirHash):            # Compare both hashes
-                print ("Match")                             
+                print ("Match")
             else:
-                print ("Mismatch, resend")                  
+                print ("Mismatch, resend")
                 markerList = []             # Clear marker list
-                
+
