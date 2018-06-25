@@ -1,22 +1,32 @@
-import cv2 #OpenCV../
-import numpy as np 
-import datetime
+import cv2          # OpenCV
+import numpy as np  # Coordinates
+import datetime     # Marker Timestamps
 import os.path
-import enableLightRing
-import disableLightRing
-from Marker import Marker
+import json         # JSON serialization 
+import hashlib      # SHA1 Hash
+import socket       # Sockets for host communication
+import RPi.GPIO as GPIO         #Light ring
+from collections import deque   # Double ended queue
+from Marker import Marker       # Marker object
+
 
 '''
 Class for MotionCapture object. Bulk of the magic is done here, utilizing the openCV library for tracking and displaying.
 This class contains functions to convert images to grayscale, utilize the openCV library for tracking whitespace and 
 displaying them as markers, denoting with a green box the coordinates.
+
 '''
 class MotionCapture:
 
     # Default constructor. No parameters needed
-    def __init__(self):
-        self.showVideo = True
-        self.showFPS = True
+
+    def __init__(self, cameraLabelIn,thresholdIn,ipIn,portIn):
+
+        #Capture settings
+        self.cameraLabel = cameraLabelIn # Label of camera, used to distinguish markers captured from different cameras
+        self.showVideo = True  # Neccessary at the moment to control capture
+        self.showFPS = True 
+
         self.showMarkers = False
         self.showCoordinates = True
         self.showMarkerCount = True
@@ -24,14 +34,24 @@ class MotionCapture:
         self.markerCount = 0
         self.markerList = []
 
-        self.markerColor = (0, 255, 0)
-        self.thresholdValue = 200
+        self.markerListFull = []
+	
+        self.markerColor = (0, 255, 0)# Set default color to Green
+        self.thresholdValue = thresholdIn # High default threshold value to ensure that white markers are precisely denoted
         self.maxThresholdValue = 255
-
         self.fpsCounter = 0
         self.startTime = None
         self.currentFPS = 0
+        self.GPIOPin = 7 # Enable Pin for Light Ring
+        GPIO.setwarnings(False) # Disable Warnings
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self.GPIOPin, GPIO.OUT)
 
+        #Networking section
+        self.s = socket.socket()        # Socket for host communication
+        self.host = ipIn     # IP address of host
+        self.port = portIn               # Port used for communcation
+        self.s.connect((self.host, self.port))
 
 
     '''
@@ -73,8 +93,7 @@ class MotionCapture:
 
 
     '''
-    This method will determine if the input grayscale image is within the whitespace threshold. 
-    Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black.
+    This method will determine if the input grayscale image is within the whitespace threshold. Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black
     @params gray_image -> The grayscale image to process
     @return The threshold image after determining the threshold rating for the image
     '''
@@ -85,7 +104,8 @@ class MotionCapture:
 
 
     '''
-    This method will write the input image still to hard disk with a unique name, as to not overwrite files.
+
+    This method will write the input image still to hard disk with a unique name, as to not overwrite files
     @params image -> The image still to write to hard disk
     
     '''
@@ -96,6 +116,18 @@ class MotionCapture:
         cv2.imwrite("image{0}.jpg".format(counter), image)
 
 
+    '''
+    This method enables the IR Light Ring for the camera
+    '''
+    def enableLightRing(self):
+        GPIO.output(self.GPIOPin, GPIO.HIGH)
+
+
+    '''
+    This method disables the IR Light Ring for the camera
+    '''
+    def disableLightRing(self):
+        GPIO.output(self.GPIOPin, GPIO.LOW)
 
 
 
@@ -110,15 +142,39 @@ class MotionCapture:
             return False
 
 
-
+    '''
+    This method dumps marker data over the communication socket
+    It serializes all the markers to JSON form
+    Calculates a hash of all the marker GUIDs
+    and sends both over to the host.
+    This should be the last step of capture process
+    '''
+    def dumpData(self):
+        jsonList=[]     # List of markers in JSON form
+        jsonFile =""    # JSON file of JSON markers
+        markerHash = hashlib.sha1()     #SHA1 hash to store hash of marker GUIDs
+        for i in self.markerListFull:   # For every marker found during capture session
+            jsonStr =i.jsonDump()       # Serialize it to JSON
+            jsonList.append(jsonStr + '\n') # Add it to the list
+            jsonFile += jsonList[-1]        # Add it to the file
+            markerHash.update(str(i.GUID))  # Update the hash with its GUID
+        self.s.send("Dumping")              # Notify host that the dump is ready
+        while(self.s.recv(4096) != "OK"):   # Wait for the host to acknowledge
+            true=True
+        self.s.send(markerHash.hexdigest()) # Send the GUID hash
+        print markerHash.hexdigest()
+        for i in jsonList:                  # For every marker
+            self.s.sendall(i)               # Send its JSON representation
+        self.s.sendall(chr(4))              # Send EOT
+        
 
     '''
     This method will locate and process markers on a given image. 
-    The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and 
-    bounding a box around them. 
-    This will refresh every frame the camera captures. Storing and creation of the markers is also processed here
+    The processing of markers involves finding them via whitespace, granted by the grayscale thresholding, and bounding a box around them. This will be
+    refresh every frame the camera captures. Storing and creation of the markers is also processed here
     @params image -> The image still (frame) to locate markers
     '''
+
     def findMarkers(self, image):
         grayScaleImage = self.getGrayScale(image)
 
@@ -149,7 +205,9 @@ class MotionCapture:
                     centerY = int (y+(y2/2))
 
                     # Draw an identifying label on top of each marker
-                    self.drawText(image, "A" + str(len(contourList) - i), (centerX, centerY - 25), .50, (0, 255, 255), 1)
+
+                    self.drawText(image, self.cameraLabel + str(len(contourList) - i), (centerX, centerY - 25), .50, (0, 255, 255), 1)
+
 
                     # Draw a circle denoting centerpoint of marker
                     cv2.circle(image, (centerX, centerY), 2, (0, 0, 255), -1)
@@ -162,10 +220,10 @@ class MotionCapture:
                             print("Creating new marker")
                         else:
                             pass
-                        temp = Marker(centerX, centerY, "A", len(contourList) - i, timestamp)
-                        self.markerList.append(temp)
-                        temp.printTest()
 
+                        temp = Marker(centerX, centerY, self.cameraLabel, len(contourList) - i, timestamp)
+                        self.markerList.append(temp)
+                        self.markerListFull.append(temp)
                         i = i - 1
                     except:
                         print("Error creating marker object or appending")
@@ -210,34 +268,44 @@ class MotionCapture:
 
 
             '''
-				Keypress events
-	    '''
+	    Keypress events
+            '''
             keyPress = cv2.waitKey(1) & 0xFF
+
             # Close down the video frame, stop capturing, and disable lightring
             if keyPress == ord('q'):
-                disableLightRing.disable()
+                self.disableLightRing()
                 cap.release()
+                self.s.send("Disconnecting")
+                self.s.close()
                 break
-            
-			# Write a still image from the camera to drive
+
+            # Dump capture session over socket    
+            if keyPress == ord('w'):
+                self.showMarkers = self.toggle(self.showMarkers)
+                self.dumpData()
+                     
+            # Write a still image from the camera to drive
             if keyPress == ord('s'):
                 self.writeMethod(frame)
 
-			# Display the current frames/sec on the video frame
+            # Display the current frames/sec on the video frame
             if keyPress == ord('f'):
                 self.showFPS = self.toggle(self.showFPS)
             
-			# Display markers in view on the video frame	
+	    # Display markers in view on the video frame	
             if keyPress == ord('m'):
                 self.showMarkers = self.toggle(self.showMarkers)
                 print("Show markers set to {0}".format(self.showMarkers))
 
-			# Enable the lightring for the camera (on e key pressed)
+
+	    # Enable the lightring for the camera (on e key pressed)
             if keyPress == ord('e'):
-                enableLightRing.enable()
-			# Disable the lightring for the camera (on d key pressed)
+                self.enableLightRing()
+                
+	    # Disable the lightring for the camera (on d key pressed)
             if keyPress == ord('d'):
-                disableLightRing.disable()
+                self.disableLightRing()
 
             # Decrease the threshold of whitelight capture (On Up Arrow Pressed)
             if keyPress == 84:
@@ -248,3 +316,4 @@ class MotionCapture:
             if keyPress == 82:
                 self.thresholdValue = self.thresholdValue + 1
                 print("Increasing threshold to {0}".format(self.thresholdValue))
+

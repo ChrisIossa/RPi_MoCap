@@ -1,8 +1,9 @@
 # Version 1.1
 
 ## Description:
-This is the latest version of the Raspberry Pi Motion Capture and Tracking System, created by the MoCap teams as part of SGRI 2017 and SGRI 2018 at Western Connecticut State University.
+This is an older version of the Raspberry Pi Motion Capture and Tracking System, created by the MoCap teams as part of SGRI 2017 and SGRI 2018 at Western Connecticut State University.
 This version contains minor optimizations and code cleanup as part of the efforts to finalize the Phase 1 software package.
+It has been succeeded by Version 1.1.2
 
 ## Directory Listing
 	./disableLightRing.py
@@ -26,4 +27,4 @@ This version contains minor optimizations and code cleanup as part of the effort
 	- George Ventura
 
 Last updated:
-05/25/2018
+06/22/2018

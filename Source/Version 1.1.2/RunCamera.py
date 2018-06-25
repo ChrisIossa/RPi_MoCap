@@ -35,8 +35,9 @@ if validImports:
     parser.add_argument('ipaddress', help='ip address of the camera')
     parser.add_argument('port', type=int, help = 'the port number')
     parser.add_argument('label', help = 'the name/label of the camera')
-    parser.add_argument('-s', '--send', help='determine if frequency of frames is displayed or not', action='store_true')
-    parser.add_argument('frame_freq', type=int, help='the frequency of frames to be sent')
+
+    #parser.add_argument('-s', '--send', help='determine if frequency of frames is displayed or not', action='store_true')
+    #parser.add_argument('frame_freq', type=int, help='the frequency of frames to be sent')
    
     #parse the command
     args = parser.parse_args()
@@ -61,8 +62,12 @@ if validImports:
             #ipAddress = re.group()
         port = args.port
         label = args.label
+
+        '''
         if args.send:
             frames = args.frame_freq
+        '''
+
         
     #printing values
     print("Values given are: ")
@@ -70,13 +75,18 @@ if validImports:
     print("IP Address -- " + str(ipAddress))
     print("Port Number -- " + str(port))
     print("Label Name -- " + str(label))
+
+    
+    '''
     #if the -s argument is set then show the frame frequency
     if args.send:
         print("Frame Frequency -- " + str(frames))
-
+    '''
+    
     # Attempt to initialize the camera object
     try:
-        vid = MotionCapture()
+        vid = MotionCapture(label,thresholdValue,ipAddress,port)
+
     except:
         print("Could not initialize camera")
         cameraInitialized = False
