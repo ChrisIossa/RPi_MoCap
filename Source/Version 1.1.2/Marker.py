@@ -26,10 +26,11 @@ class Marker:
     # A little print test containing marker information
     def printTest(self):
         print("Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp))
-        return "Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp)
-    
+     
     # silent version of print test
     def returnTest(self):
+        return "Marker {0}{1}: {2}, {3}".format(self.cameraLabel, self.markerIdentifier, self.coords, self.markerTimestamp)
+
     # Print the x, y coordinates of the marker
     def printCoords(self):
         print("Marker {0}{1} coordinates: {2}".format(self.cameraLabel, self.markerIdentifier, self.coords))

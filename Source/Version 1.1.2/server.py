@@ -6,9 +6,9 @@ from Marker import Marker
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)       # Create a socket object
-host = '169.254.114.139'             # IP address used for this service
-port = 12345                 # Reserve a port for your service.
-cameraCount = 1      # Number of cameras used for this session.
+host = '__IP_ADDRESS__'             # IP address used for this service
+port = __PORT_NUMBER__              # Reserve a port for your service.
+cameraCount =__NUMBER_OF_CAMERAS__  # Number of cameras used for this session.
 print(host)
 s.bind((host, port))                # Bind to the port
 s.listen(5)                         # Now wait for client connection.
@@ -30,11 +30,11 @@ while cameraCount != 0:                     # While there are still cameras conn
         try:
             msg = v.recv(4096)              # Listen for any message on socket
         except:
-            print "Read timed out"          # Nothing in socket
+            print "Read timed out on " + k  # Nothing in socket
             break;
         v.settimeout(None)
         if(msg == "Disconnecting"):         # Camera disconnected
-            cameraCount -= 1                   # One less camera connected
+            cameraCount -= 1                # One less camera connected
             print(msg)
             v.close()                       # Close the socket
         elif (msg=="Dumping"):              # Camera wishes to dump data
@@ -52,6 +52,9 @@ while cameraCount != 0:                     # While there are still cameras conn
             jsonFile = jsonFile.strip("\n ' '")     # Remove whitespace characters from start and end of string
             records = jsonFile.split('\n')  # Turn line delimited JSON objects into list of JSON objets
             for i in records:               # For each JSON Object
+                if (i == chr(4)):
+                    print "EOF"
+                    break;
                 if(i[0] != '{'):            # If the first character is not a opening curly brace
                     print "Error: " + i     # Print out the record
                 if (i[-1] != '}'):          # If the last character is not a closing curly brace
