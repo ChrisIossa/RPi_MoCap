@@ -36,7 +36,7 @@ The Raspberry Pi Motion Capture and Tracking System (name to be changed) is an a
 - Monitor
 - Mouse
 - Keyboard
-- CPU that supports VNC Viewer
+- Computer that supports VNC Viewer
 
 
 ## 3 Setup and Installation
