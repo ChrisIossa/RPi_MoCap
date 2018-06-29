@@ -282,7 +282,8 @@ class MotionCapture:
 
             # Dump capture session over socket    
             if keyPress == ord('w'):
-                self.showMarkers = self.toggle(self.showMarkers)
+                if(self.showMarkers == True):
+			self.showMarkers = self.toggle(self.showMarkers)`
                 self.dumpData()
                      
             # Write a still image from the camera to drive
