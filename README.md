@@ -47,25 +47,30 @@ The Raspberry Pi Motion Capture and Tracking System (name to be changed) is an a
 
 ### 3.2 Raspberry Pi Setup
 - Connect the Pi to a power source.
-- Connect the Pi to an Ethernet cable connected to a network the host computer is also connected to.
-- 
+- Connect the Pi to an network switch or router. The host computer and all other cameras should also be connected to this network.
+- If the IP address of the Pi is known and VNC is enabled, connect to the Pi using VNC Viewer.
+    - Otherwise, connect the Pi to a Keyboard, Mouse, and monitor. The Pi should be connected to the monitor ___before___ being powered on, otherwise video output may be disabled.
+    - Ensure that VNC, SSH, and Remote GPIO are enabled under Raspberry Pi settings
+    - Connect to the Pi using VNC Viewer
+    - The Pi may now be disconnnected from the Monitor, Keyboard, and Mouse
 
 ### 3.3 Camera Installation
+(NOTE: THIS SHOULD BE DONE WHILE THE Pi IS POWERED DOWN)
 - Connect the NoIR camera to the "Camera" port in the Pi.
-- Connect the IR Light Ring jumper wires to the following Pi ports:
-    - Red F/F on port 2
-    - Black F/F on port 6
-    - Yellow F/F on port 7
-    - Ports can be found on pinout.xyz
+- Connect the IR Light Ring to the Pi via F/F breadboard cables:
+    - Red F/F on pin 2
+    - Black F/F on pin 6
+    - Yellow F/F on pin 7
+    - Pinout reference can be found on pinout.xyz
     
 ### 3.4 Software Installation
 - Install VNC Viewer in the Host Machine
     - Connect to the Pi by inputting its IP Address onto VNC
-- Make sure that all files listed on ##4 are all in the same directory/folder.
+- Make sure that all files listed on ##4 are all in the same directory/folder. This should be the latest version of the software
 - Run the file "RunCamera.py" with the following parameters:
-- python ./RunCamera.py [threshold value], [camera IP address], [camera Port Number], [camera Label], [-s], [Frame Frequency]
-    - Example: python ./RunCamera.py 255 123.456.789.000 12345 B -s 30
-    - The -s option can be set to determine wether or not a frame frequency will be utilized, do not use this option if you do not wish to use a frame frequency.
+- python ./RunCamera.py [threshold value] [camera IP address] [camera Port Number] [camera Label]
+    - Example: python ./RunCamera.py 255 123.456.789.000 12345 B
+    
     
 
 ## 4 Files
