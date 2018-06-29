@@ -30,7 +30,7 @@ while cameraCount != 0:                     # While there are still cameras conn
         try:
             msg = v.recv(4096)              # Listen for any message on socket
         except:
-            print "Read timed out on " + k  # Nothing in socket
+            print "Read timed out on " + str(k)  # Nothing in socket
             break;
         v.settimeout(None)
         if(msg == "Disconnecting"):         # Camera disconnected
