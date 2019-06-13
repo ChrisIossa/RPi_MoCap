@@ -2,10 +2,6 @@ import cv2 #OpenCV
 import numpy as np 
 import datetime
 import os.path
-'''
-import enableLightRing
-import disableLightRing
-'''
 import RPi.GPIO as GPIO
 from Marker import Marker
 
@@ -45,7 +41,7 @@ class MotionCapture:
     This method will display the frames per second being captured by the camera in the upper left hand corner
     @params image -> What image frame to display the text to
     '''
-    def displayFPS(self, image):
+    def displa*-+*yFPS(self, image):
         font = cv2.FONT_HERSHEY_SIMPLEX
         cv2.putText(image, "FPS: {0}".format(self.currentFPS), 
                     (25, 25), font, .75, (255, 255, 0), 2)
@@ -85,7 +81,7 @@ class MotionCapture:
     Utilize THRESH_BINARY to convert all pixels to either 0 for white, or 1 for black.
     @params gray_image -> The grayscale image to process
     @return The threshold image after determining the threshold rating for the image
-
+*++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++***********
     '''
     def getThresholdMask(self, grayScaleImage):
         th, dst = cv2.threshold(grayScaleImage, self.thresholdValue, self.maxThresholdValue, cv2.THRESH_BINARY)  # apply filter
