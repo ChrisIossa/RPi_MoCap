@@ -15,6 +15,13 @@ This repository contains files relating to the development of a low-cost motion 
 	- Matheus Alexandre
 	- Ty Doris
 	- Malik Roc
+- SGRI 2019 
+	- William Joel (Faculty Advisor)
+	- Matheus Alexandre (Project Lead)
+	- Malik Roc
+	- Ty Doris
+	
+
 
 ## Description
 The goal of this project is to design a cost-effective motion capture system using "off the shelf" components and custom designed software. The project currently uses Raspberry Pi 3 computers for development but is targeting Raspberry Pi Zeroes for deployment. The system also uses NoIR cameras for computer vision purposes The software is written in Python and utilizes the [OpenCV computer vision library](https://opencv.org/).
