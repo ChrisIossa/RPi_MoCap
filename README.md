@@ -123,12 +123,12 @@ The Raspberry Pi Motion Capture and Tracking System (name to be changed) is an a
 - [Christopher Iossa (Project Lead)](https://github.com/ChrisIossa)
 - [Matheus Alexandre](https://github.com/madatedeus)
 - Ty Doris
-- Malik Roc
+- [Malik Roc](https://github.com/rocstory)
 ### SGRI 2019 
 - William Joel (Faculty Advisor)
 - [Matheus Alexandre(Project Lead)](https://github.com/madatedeus)
 - Ty Doris
-- Malik Roc
+- [Malik Roc](https://github.com/rocstory)
 
 
 
